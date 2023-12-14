@@ -2,28 +2,28 @@
 const Servient = require('@node-wot/core').Servient;
 const HttpServer = require('@node-wot/binding-http').HttpServer;
 
+//mycobot js library
 const mycobot = require("mycobot")
 
-// obj Based on SerialPort
-let serial = mycobot.connect("/dev/ttyACM0",115200)
+//data that the proxy will hold on the robot state
 let color = {r: 0, g: 0, b: 0}
 let angles = [0,0,0,0,0,0]
 let gripper = 0;
+
+//creating the serial channel with the robot, be sure to select the appropriate serial interface (e.g. "COM3" on Windows)
+let serial = mycobot.connect("/dev/ttyACM0",115200)
+
+//Reset the robot position, color and gripper
 serial.write(mycobot.setColor(color.r, color.g, color.b))
 serial.write(mycobot.setGripperValue(gripper, 100))
 serial.write(mycobot.sendAngles(angles, 50))
 
-
-serial.on("data",(data)=>{
-    res = mycobot.processReceived(data)
-    console.log("mycobot-res:", res)
-})
-
+//Create new Servient with an HTTP interface
 const servient = new Servient();
 servient.addServer(new HttpServer());
 
+// Then from here on you can use the WoT object to produce the thing
 servient.start().then( async (WoT) => {
-    // Then from here on you can use the WoT object to produce the thing
     const exposingThing = await WoT.produce({
         title: "mycobot",
         description: "A 6DOF robot arm",
@@ -139,6 +139,8 @@ servient.start().then( async (WoT) => {
             
         }
     })
+    //setting property handlers to return data 
+    //(in this case not reading from the robot due to the way reading is done through the serial)
     exposingThing.setPropertyReadHandler("color", () => {
         return color;
     })
@@ -148,6 +150,8 @@ servient.start().then( async (WoT) => {
     exposingThing.setPropertyReadHandler("gripper", async () => {
         return gripper
     })
+
+    //setting action handlers to send commands to the robot through the serial and save the sent value in memory
     exposingThing.setActionHandler("setColor", async (params, options) => { 
         color = await params.value();
         console.log("Received: "+ JSON.stringify(color))
@@ -168,7 +172,9 @@ servient.start().then( async (WoT) => {
         await serial.write(mycobot.setGripperValue(data.value, data.speed))
         return undefined
     });
+    
+    //expose the thing
     await exposingThing.expose();
     
-    // now you can interact with the thing via http://localhost:8080/counter
+    // now you can interact with the thing via http://localhost:8080/mycobot
 });
