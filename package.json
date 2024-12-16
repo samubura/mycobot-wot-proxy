@@ -1,16 +1,17 @@
 {
   "dependencies": {
-    "@node-wot/binding-http": "^0.8.10",
+    "@node-wot/binding-http": "^0.8.7",
     "@node-wot/core": "^0.8.10",
-    "mycobot": "^0.0.5"
+    "mycobot": "^0.0.5",
+    "serialport": "^12.0.0"
   },
   "name": "mycobot-wot-proxy",
   "version": "0.1.0",
   "description": "A mycobot WoT adapter using node-wot",
   "main": "app.js",
-  "devDependencies": {},
   "scripts": {
-    "test": "nodemon app.js"
+    "app": "nodemon app.js",
+    "test": "node test-bot.js"
   },
   "author": "Samuele Burattini",
   "license": "MIT"

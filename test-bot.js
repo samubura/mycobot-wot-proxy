@@ -4,11 +4,40 @@ var mycobot = require("mycobot")
 // obj Based on SerialPort
 var obj = mycobot.connect("/dev/ttyACM0",115200)
 
-obj.write(mycobot.sendAngles([160,0,0,0,0,0],60))
+var down_position = [0, -35, -100, 50, 0, -45]
 
-obj.write(mycobot.getAngles())
+var up_position = [0, 0, 0, 0, 0, -45]
 
-obj.on("data",(data)=>{
-    res = mycobot.processReceived(data)
-    console.log("res:", res)
-})
+var speed = 30;
+
+var delay = 5000;
+
+
+async function main(position, gripper) {
+
+    console.log(position);
+
+    obj.write(mycobot.sendAngles(position.slice(0), speed));
+    await sleep(delay);
+
+    obj.write(mycobot.setGripperValue(gripper, speed));
+    await sleep(delay);
+
+    var newPos = position == up_position ? down_position : up_position;
+    var newGrip = gripper == 0 ? 100 : 0;
+    console.log(newPos)
+    await main(newPos, newGrip);
+}
+
+
+main(up_position, 100);
+
+
+
+
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
