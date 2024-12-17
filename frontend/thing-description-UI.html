@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+    <title>Thing Description UI</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Thing Description UI</h1>
+        <div class="mt-4">
+            <form id="load-td-form">
+                <div class="form-group d-flex">
+                    <input id="td-url" type="url" class="form-control mr-2" placeholder="Enter Thing Description URL" value="http://localhost:8080/mycobot" required>
+                    <button id="fetch" type="button" class="btn btn-primary">Load</button>
+                </div>
+            </form>
+        </div>
+        <div id="interactions" class="container">
+            <div class="row mt-4">
+                <h3>Properties</h3>
+                <div id="properties" class="container"></div>
+            </div>
+            <div class="row mt-4">
+                <h3>Actions</h3>
+                <div id="actions" class="container"></div>
+            </div>
+            <div class="row mt-4">
+                <h3>Events</h3>
+                <div id="events" class="container"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@node-wot/browser-bundle@latest/dist/wot-bundle.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
