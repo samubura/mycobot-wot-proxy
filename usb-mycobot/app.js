@@ -18,9 +18,24 @@ serial.write(mycobot.setColor(color.r, color.g, color.b))
 serial.write(mycobot.setGripperValue(gripper, 100))
 serial.write(mycobot.sendAngles(angles, 50))
 
+
+const middleware = async (req, res, next) => {
+    // For example, reject requests in which the X-Custom-Header header is missing
+    // by replying with 400 Bad Request
+    // Pass all other requests to the WoT Servient
+    console.log(req);
+    next();
+};
+
+
+const httpServer = new HttpServer({
+    middleware,
+});
+
+
 //Create new Servient with an HTTP interface
 const servient = new Servient();
-servient.addServer(new HttpServer());
+servient.addServer(httpServer);
 
 // Then from here on you can use the WoT object to produce the thing
 servient.start().then( async (WoT) => {
@@ -64,7 +79,7 @@ servient.start().then( async (WoT) => {
             gripper: {
                 type: "integer",
                 minimum: 0,
-                maximum: 0,
+                maximum: 100,
                 readOnly: true
             }
         },
@@ -162,7 +177,7 @@ servient.start().then( async (WoT) => {
         let data = await params.value();
         angles = data.angles;
         console.log("Received: "+ JSON.stringify(data))
-        await serial.write(mycobot.sendAngles(data.angles, data.speed))
+        await serial.write(mycobot.sendAngles(data.angles.slice(0), data.speed))
         return undefined
     });
     exposingThing.setActionHandler("setGripperValue", async (params, options) => { 
